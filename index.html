@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Weather App</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4facfe,
+                    #00f2fe
+                );
+
+            padding: 30px 15px;
+
+            color: #172033;
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            margin: auto;
+        }
+
+
+        /* Header */
+
+        .header {
+
+            text-align: center;
+
+            color: white;
+
+            margin-bottom: 25px;
+        }
+
+
+        .header h1 {
+
+            font-size: 42px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .header p {
+
+            font-size: 16px;
+
+            opacity: 0.9;
+        }
+
+
+        /* Search */
+
+        .search-box {
+
+            background: rgba(255,255,255,0.95);
+
+            padding: 15px;
+
+            border-radius: 16px;
+
+            display: flex;
+
+            gap: 10px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0,0,0,0.15);
+
+            margin-bottom: 25px;
+        }
+
+
+        .search-box input {
+
+            flex: 1;
+
+            border: none;
+
+            outline: none;
+
+            background: #f1f4f8;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+        }
+
+
+        .search-box button {
+
+            border: none;
+
+            padding: 0 25px;
+
+            border-radius: 10px;
+
+            background: #007bff;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .search-box button:hover {
+
+            background: #0056b3;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* Loading */
+
+        .loading {
+
+            display: none;
+
+            text-align: center;
+
+            color: white;
+
+            font-size: 18px;
+
+            margin: 20px;
+        }
+
+
+        /* Error */
+
+        .error {
+
+            display: none;
+
+            background: #fff;
+
+            color: #d00000;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* Main weather */
+
+        .weather-card {
+
+            display: none;
+
+            background:
+                rgba(255,255,255,0.95);
+
+            border-radius: 22px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0,0,0,0.18);
+        }
+
+
+        .location {
+
+            text-align: center;
+
+            margin-bottom: 25px;
+        }
+
+
+        .location h2 {
+
+            font-size: 30px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .location p {
+
+            color: #667085;
+
+            font-size: 15px;
+        }
+
+
+        /* Current temperature */
+
+        .current {
+
+            text-align: center;
+
+            padding: 10px 0 30px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        .weather-icon {
+
+            width: 100px;
+
+            height: 100px;
+
+            object-fit: contain;
+        }
+
+
+        .temperature {
+
+            font-size: 65px;
+
+            font-weight: bold;
+
+            line-height: 1;
+        }
+
+
+        .description {
+
+            font-size: 20px;
+
+            text-transform: capitalize;
+
+            margin-top: 10px;
+
+            color: #667085;
+        }
+
+
+        .feels {
+
+            margin-top: 8px;
+
+            color: #667085;
+        }
+
+
+        /* Information grid */
+
+        .section-title {
+
+            font-size: 22px;
+
+            margin: 28px 0 15px;
+        }
+
+
+        .info-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .info {
+
+            background: #f6f8fb;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            min-height: 100px;
+        }
+
+
+        .info .icon {
+
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .info .label {
+
+            color: #667085;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .info .value {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            word-break: break-word;
+        }
+
+
+        /* Footer */
+
+        .footer {
+
+            text-align: center;
+
+            color: white;
+
+            margin-top: 20px;
+
+            font-size: 13px;
+
+            opacity: 0.9;
+        }
+
+
+        /* Tablet */
+
+        @media (max-width: 800px) {
+
+            .info-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 500px) {
+
+            body {
+
+                padding: 20px 10px;
+            }
+
+
+            .header h1 {
+
+                font-size: 32px;
+            }
+
+
+            .search-box {
+
+                flex-direction: column;
+            }
+
+
+            .search-box button {
+
+                padding: 14px;
+            }
+
+
+            .weather-card {
+
+                padding: 20px;
+            }
+
+
+            .temperature {
+
+                font-size: 55px;
+            }
+
+
+            .info-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 10px;
+            }
+
+
+            .info {
+
+                padding: 14px;
+
+                min-height: 90px;
+            }
+
+
+            .info .value {
+
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <h1>🌤️ Weather App</h1>
+
+        <p>
+            Search current weather anywhere
+        </p>
+
+    </div>
+
+
+    <!-- Search -->
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="cityInput"
+            placeholder="Enter city name..."
+            autocomplete="off"
+        >
+
+        <button onclick="searchWeather()">
+            🔍 Search
+        </button>
+
+    </div>
+
+
+    <!-- Loading -->
+
+    <div
+        class="loading"
+        id="loading"
+    >
+        Loading weather...
+    </div>
+
+
+    <!-- Error -->
+
+    <div
+        class="error"
+        id="error"
+    ></div>
+
+
+    <!-- Weather -->
+
+    <div
+        class="weather-card"
+        id="weatherCard"
+    >
+
+
+        <!-- Location -->
+
+        <div class="location">
+
+            <h2 id="cityName">
+                --
+            </h2>
+
+            <p id="locationDetails">
+                --
+            </p>
+
+        </div>
+
+
+        <!-- Current weather -->
+
+        <div class="current">
+
+            <img
+                id="weatherIcon"
+                class="weather-icon"
+                src=""
+                alt="Weather"
+            >
+
+            <div
+                class="temperature"
+                id="temperature"
+            >
+                --°C
+            </div>
+
+            <div
+                class="description"
+                id="description"
+            >
+                --
+            </div>
+
+            <div
+                class="feels"
+                id="feels"
+            >
+                Feels like --°C
+            </div>
+
+        </div>
+
+
+        <!-- Temperature -->
+
+        <h3 class="section-title">
+            🌡️ Temperature
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">🌡️</div>
+
+                <div class="label">
+                    Current
+                </div>
+
+                <div
+                    class="value"
+                    id="tempCurrent"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🔥</div>
+
+                <div class="label">
+                    Feels Like
+                </div>
+
+                <div
+                    class="value"
+                    id="tempFeels"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🔽</div>
+
+                <div class="label">
+                    Minimum
+                </div>
+
+                <div
+                    class="value"
+                    id="tempMin"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🔼</div>
+
+                <div class="label">
+                    Maximum
+                </div>
+
+                <div
+                    class="value"
+                    id="tempMax"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Atmosphere -->
+
+        <h3 class="section-title">
+            🌍 Atmosphere
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">💧</div>
+
+                <div class="label">
+                    Humidity
+                </div>
+
+                <div
+                    class="value"
+                    id="humidity"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">📊</div>
+
+                <div class="label">
+                    Pressure
+                </div>
+
+                <div
+                    class="value"
+                    id="pressure"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">👁️</div>
+
+                <div class="label">
+                    Visibility
+                </div>
+
+                <div
+                    class="value"
+                    id="visibility"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">☁️</div>
+
+                <div class="label">
+                    Cloudiness
+                </div>
+
+                <div
+                    class="value"
+                    id="cloudiness"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Wind -->
+
+        <h3 class="section-title">
+            💨 Wind
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">💨</div>
+
+                <div class="label">
+                    Wind Speed
+                </div>
+
+                <div
+                    class="value"
+                    id="windSpeed"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🧭</div>
+
+                <div class="label">
+                    Direction
+                </div>
+
+                <div
+                    class="value"
+                    id="windDirection"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🧭</div>
+
+                <div class="label">
+                    Degrees
+                </div>
+
+                <div
+                    class="value"
+                    id="windDegree"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">💨</div>
+
+                <div class="label">
+                    Gust
+                </div>
+
+                <div
+                    class="value"
+                    id="windGust"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Rain / Snow -->
+
+        <h3 class="section-title">
+            🌧️ Precipitation
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">🌧️</div>
+
+                <div class="label">
+                    Rain (1 hour)
+                </div>
+
+                <div
+                    class="value"
+                    id="rain1"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🌧️</div>
+
+                <div class="label">
+                    Rain (3 hours)
+                </div>
+
+                <div
+                    class="value"
+                    id="rain3"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">❄️</div>
+
+                <div class="label">
+                    Snow (1 hour)
+                </div>
+
+                <div
+                    class="value"
+                    id="snow1"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">❄️</div>
+
+                <div class="label">
+                    Snow (3 hours)
+                </div>
+
+                <div
+                    class="value"
+                    id="snow3"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Sun -->
+
+        <h3 class="section-title">
+            ☀️ Sun
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">🌅</div>
+
+                <div class="label">
+                    Sunrise
+                </div>
+
+                <div
+                    class="value"
+                    id="sunrise"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🌇</div>
+
+                <div class="label">
+                    Sunset
+                </div>
+
+                <div
+                    class="value"
+                    id="sunset"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🕐</div>
+
+                <div class="label">
+                    Local Time
+                </div>
+
+                <div
+                    class="value"
+                    id="localTime"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🌍</div>
+
+                <div class="label">
+                    Timezone
+                </div>
+
+                <div
+                    class="value"
+                    id="timezone"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Location information -->
+
+        <h3 class="section-title">
+            📍 Location
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info">
+
+                <div class="icon">🌐</div>
+
+                <div class="label">
+                    Latitude
+                </div>
+
+                <div
+                    class="value"
+                    id="latitude"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🌐</div>
+
+                <div class="label">
+                    Longitude
+                </div>
+
+                <div
+                    class="value"
+                    id="longitude"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🏳️</div>
+
+                <div class="label">
+                    Country
+                </div>
+
+                <div
+                    class="value"
+                    id="country"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="info">
+
+                <div class="icon">🏙️</div>
+
+                <div class="label">
+                    State
+                </div>
+
+                <div
+                    class="value"
+                    id="state"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer">
+
+        Weather data powered by chandrabos
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    // ---------------------------------
+    // Search Weather
+    // ---------------------------------
+
+    async function searchWeather() {
+
+
+        const cityInput =
+            document.getElementById("cityInput");
+
+        const city =
+            cityInput.value.trim();
+
+
+        if (!city) {
+
+            showError(
+                "Please enter a city name."
+            );
+
+            return;
+        }
+
+
+        showLoading(true);
+
+        hideError();
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    `/weather?city=${encodeURIComponent(city)}`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Unable to get weather."
+                );
+            }
+
+
+            displayWeather(data);
+
+
+        }
+
+        catch (error) {
+
+            showError(
+                error.message
+            );
+
+        }
+
+        finally {
+
+            showLoading(false);
+
+        }
+
+    }
+
+
+    // ---------------------------------
+    // Enter key
+    // ---------------------------------
+
+    document
+        .getElementById("cityInput")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    searchWeather();
+
+                }
+
+            }
+        );
+
+
+    // ---------------------------------
+    // Display Weather
+    // ---------------------------------
+
+    function displayWeather(data) {
+
+
+        document
+            .getElementById("weatherCard")
+            .style.display = "block";
+
+
+        // Location
+
+        document
+            .getElementById("cityName")
+            .textContent =
+                data.city;
+
+
+        let locationText =
+            data.country;
+
+
+        if (data.state) {
+
+            locationText =
+                data.state +
+                ", " +
+                data.country;
+
+        }
+
+
+        document
+            .getElementById("locationDetails")
+            .textContent =
+                locationText;
+
+
+        // Main weather
+
+        document
+            .getElementById("weatherIcon")
+            .src =
+                data.icon_url;
+
+
+        document
+            .getElementById("temperature")
+            .textContent =
+                Math.round(data.temperature)
+                + "°C";
+
+
+        document
+            .getElementById("description")
+            .textContent =
+                data.description;
+
+
+        document
+            .getElementById("feels")
+            .textContent =
+                "Feels like "
+                + Math.round(data.feels_like)
+                + "°C";
+
+
+        // Temperature
+
+        setText(
+            "tempCurrent",
+            formatNumber(data.temperature)
+            + " °C"
+        );
+
+
+        setText(
+            "tempFeels",
+            formatNumber(data.feels_like)
+            + " °C"
+        );
+
+
+        setText(
+            "tempMin",
+            formatNumber(data.temp_min)
+            + " °C"
+        );
+
+
+        setText(
+            "tempMax",
+            formatNumber(data.temp_max)
+            + " °C"
+        );
+
+
+        // Atmosphere
+
+        setText(
+            "humidity",
+            data.humidity + " %"
+        );
+
+
+        setText(
+            "pressure",
+            data.pressure + " hPa"
+        );
+
+
+        setText(
+            "visibility",
+            formatVisibility(data.visibility)
+        );
+
+
+        setText(
+            "cloudiness",
+            data.cloudiness + " %"
+        );
+
+
+        // Wind
+
+        setText(
+            "windSpeed",
+            data.wind_speed + " m/s"
+        );
+
+
+        setText(
+            "windDirection",
+            data.wind_direction
+        );
+
+
+        setText(
+            "windDegree",
+            data.wind_degree + "°"
+        );
+
+
+        setText(
+            "windGust",
+            data.wind_gust
+            ? data.wind_gust + " m/s"
+            : "N/A"
+        );
+
+
+        // Rain
+
+        setText(
+            "rain1",
+            data.rain_1h + " mm"
+        );
+
+
+        setText(
+            "rain3",
+            data.rain_3h + " mm"
+        );
+
+
+        // Snow
+
+        setText(
+            "snow1",
+            data.snow_1h + " mm"
+        );
+
+
+        setText(
+            "snow3",
+            data.snow_3h + " mm"
+        );
+
+
+        // Sun
+
+        setText(
+            "sunrise",
+            data.sunrise
+        );
+
+
+        setText(
+            "sunset",
+            data.sunset
+        );
+
+
+        setText(
+            "localTime",
+            data.local_time
+        );
+
+
+        setText(
+            "timezone",
+            formatTimezone(data.timezone)
+        );
+
+
+        // Location
+
+        setText(
+            "latitude",
+            Number(data.latitude).toFixed(4)
+        );
+
+
+        setText(
+            "longitude",
+            Number(data.longitude).toFixed(4)
+        );
+
+
+        setText(
+            "country",
+            data.country
+        );
+
+
+        setText(
+            "state",
+            data.state || "N/A"
+        );
+
+    }
+
+
+    // ---------------------------------
+    // Helper
+    // ---------------------------------
+
+    function setText(id, value) {
+
+        document
+            .getElementById(id)
+            .textContent = value;
+
+    }
+
+
+    function formatNumber(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "N/A";
+
+        }
+
+
+        return Number(value).toFixed(1);
+
+    }
+
+
+    function formatVisibility(value) {
+
+        if (!value) {
+
+            return "N/A";
+
+        }
+
+
+        return (
+            (value / 1000).toFixed(1)
+            + " km"
+        );
+
+    }
+
+
+    function formatTimezone(seconds) {
+
+        if (seconds === 0) {
+
+            return "UTC+0";
+
+        }
+
+
+        const sign =
+            seconds >= 0
+            ? "+"
+            : "-";
+
+
+        const hours =
+            Math.floor(
+                Math.abs(seconds) / 3600
+            );
+
+
+        const minutes =
+            Math.floor(
+                (Math.abs(seconds) % 3600) / 60
+            );
+
+
+        if (minutes === 0) {
+
+            return "UTC"
+                + sign
+                + hours;
+
+        }
+
+
+        return "UTC"
+            + sign
+            + hours
+            + ":"
+            + String(minutes).padStart(2, "0");
+
+    }
+
+
+    function showLoading(show) {
+
+        document
+            .getElementById("loading")
+            .style.display =
+                show ? "block" : "none";
+
+    }
+
+
+    function showError(message) {
+
+        const error =
+            document.getElementById("error");
+
+
+        error.textContent = message;
+
+        error.style.display = "block";
+
+
+        document
+            .getElementById("weatherCard")
+            .style.display = "none";
+
+    }
+
+
+    function hideError() {
+
+        document
+            .getElementById("error")
+            .style.display = "none";
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+# Environment variables / API keys
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# VS Code
+.vscode/
+
+# Flask
+instance/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
