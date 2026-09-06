@@ -32,3 +32,13 @@ weather_project/
 ├── .env
 ├── .gitignore
 └── README.md
+
+## Setup
+
+1. Clone this repository.
+2. Install the required Python packages.
+3. Create your own `.env` file in the project folder.
+4. Add your OpenWeather API key to the `.env` file:
+
+```env
+API_KEY=YOUR_OPENWEATHER_API_KEY
